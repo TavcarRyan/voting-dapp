@@ -1,5 +1,6 @@
 import { ethers } from "ethers";
 import Greeter from "../artifacts/contracts/Greeter.sol/Greeter.json";
+import Voting from "../artifacts/contracts/Voting.sol/Voting.json";
 
 // Check for MetaMask wallet browser extension
 function hasEthereum() {
@@ -18,7 +19,7 @@ async function getContract() {
   const signerAddress = await signer.getAddress();
   const contract = new ethers.Contract(
     process.env.REACT_APP_PRIVATE_KEY,
-    Greeter.abi,
+    Voting.abi,
     signer
   );
   return contract;
