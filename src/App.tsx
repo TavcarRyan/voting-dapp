@@ -34,6 +34,12 @@ function App() {
   const [connectedWalletAddress, setConnectedWalletAddressState] =
     React.useState("");
 
+  const [candidate1, setCandidate1] = React.useState("");
+  const [candidate2, setCandidate2] = React.useState("");
+  const [candidate3, setCandidate3] = React.useState("");
+
+  const [candidateList, setCandidateList] = React.useState<string[]>([""]);
+
   const { signerContract, providerContract, signer, provider } = useContract(
     Voting.abi
   );
@@ -108,11 +114,45 @@ function App() {
     }
   };
 
+  const submitForm = async (event: any) => {
+    event.preventDefault();
+    validateMetaMask();
+    await requestAccount();
+    const signerAddress = await signer.getAddress();
+    setConnectedWalletAddressState(`Connected wallet: ${signerAddress}`);
+
+    try {
+      const transaction = await signerContract.setCandidates([
+        candidate1,
+        candidate2,
+        candidate3,
+      ]);
+      setCandidate1("");
+      setCandidate2("");
+      setCandidate3("");
+      await transaction.wait();
+
+      signerContract.on("NewCandidates", (candidateList, event) => {
+        console.log(`candidate added: ${candidateList[0].toString()}`);
+        console.log(`candidate added: ${candidateList[1].toString()}`);
+        console.log(`candidate added: ${candidateList[2].toString()}`);
+
+        setCandidateList([
+          candidateList[0].toString(),
+          candidateList[1].toString(),
+          candidateList[2].toString(),
+        ]);
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <Container className="App">
       <h1>A Simple Voting Application</h1>
       <div>
-        {Object.keys(candidateVotes).map((el) => (
+        {candidateList.map((el) => (
           <Grid key={el}>
             <Card
               name={el}
@@ -128,6 +168,34 @@ function App() {
           <p className="text-md">{connectedWalletAddress}</p>
         )}
       </div>
+      <form onSubmit={submitForm}>
+        <Grid container justifyContent="space-evenly" style={{ width: "100%" }}>
+          <Grid item>
+            <input
+              type="text"
+              value={candidate1}
+              onChange={(e) => setCandidate1(e.target.value)}
+            />
+          </Grid>
+          <Grid item>
+            <input
+              type="text"
+              value={candidate2}
+              onChange={(e) => setCandidate2(e.target.value)}
+            />
+          </Grid>
+          <Grid item>
+            <input
+              type="text"
+              value={candidate3}
+              onChange={(e) => setCandidate3(e.target.value)}
+            />
+          </Grid>
+          <Grid item>
+            <button type="submit">Submit candidates</button>
+          </Grid>
+        </Grid>
+      </form>
     </Container>
   );
 }

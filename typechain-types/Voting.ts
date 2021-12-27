@@ -13,13 +13,14 @@ import {
   Signer,
   utils,
 } from "ethers";
-import { FunctionFragment, Result } from "@ethersproject/abi";
+import { FunctionFragment, Result, EventFragment } from "@ethersproject/abi";
 import { Listener, Provider } from "@ethersproject/providers";
 import { TypedEventFilter, TypedEvent, TypedListener, OnEvent } from "./common";
 
 export interface VotingInterface extends utils.Interface {
   functions: {
     "candidateList(uint256)": FunctionFragment;
+    "setCandidates(string[])": FunctionFragment;
     "totalVotes(string)": FunctionFragment;
     "totalVotesCasted()": FunctionFragment;
     "voteForCandidate(string)": FunctionFragment;
@@ -29,6 +30,10 @@ export interface VotingInterface extends utils.Interface {
   encodeFunctionData(
     functionFragment: "candidateList",
     values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setCandidates",
+    values: [string[]]
   ): string;
   encodeFunctionData(functionFragment: "totalVotes", values: [string]): string;
   encodeFunctionData(
@@ -48,6 +53,10 @@ export interface VotingInterface extends utils.Interface {
     functionFragment: "candidateList",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(
+    functionFragment: "setCandidates",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "totalVotes", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "totalVotesCasted",
@@ -62,8 +71,19 @@ export interface VotingInterface extends utils.Interface {
     data: BytesLike
   ): Result;
 
-  events: {};
+  events: {
+    "NewCandidates(string[])": EventFragment;
+  };
+
+  getEvent(nameOrSignatureOrTopic: "NewCandidates"): EventFragment;
 }
+
+export type NewCandidatesEvent = TypedEvent<
+  [string[]],
+  { candidateList: string[] }
+>;
+
+export type NewCandidatesEventFilter = TypedEventFilter<NewCandidatesEvent>;
 
 export interface Voting extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
@@ -97,6 +117,11 @@ export interface Voting extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[string]>;
 
+    setCandidates(
+      _candidateNames: string[],
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
     totalVotes(
       _candidate: string,
       overrides?: CallOverrides
@@ -117,6 +142,11 @@ export interface Voting extends BaseContract {
 
   candidateList(arg0: BigNumberish, overrides?: CallOverrides): Promise<string>;
 
+  setCandidates(
+    _candidateNames: string[],
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
   totalVotes(_candidate: string, overrides?: CallOverrides): Promise<BigNumber>;
 
   totalVotesCasted(overrides?: CallOverrides): Promise<BigNumber>;
@@ -134,6 +164,11 @@ export interface Voting extends BaseContract {
       overrides?: CallOverrides
     ): Promise<string>;
 
+    setCandidates(
+      _candidateNames: string[],
+      overrides?: CallOverrides
+    ): Promise<void>;
+
     totalVotes(
       _candidate: string,
       overrides?: CallOverrides
@@ -149,12 +184,20 @@ export interface Voting extends BaseContract {
     votesReceived(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
   };
 
-  filters: {};
+  filters: {
+    "NewCandidates(string[])"(candidateList?: null): NewCandidatesEventFilter;
+    NewCandidates(candidateList?: null): NewCandidatesEventFilter;
+  };
 
   estimateGas: {
     candidateList(
       arg0: BigNumberish,
       overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    setCandidates(
+      _candidateNames: string[],
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     totalVotes(
@@ -176,6 +219,11 @@ export interface Voting extends BaseContract {
     candidateList(
       arg0: BigNumberish,
       overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    setCandidates(
+      _candidateNames: string[],
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     totalVotes(

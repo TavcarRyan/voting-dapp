@@ -5,16 +5,18 @@ import "hardhat/console.sol";
 
 contract Voting {
 
+    event NewCandidates(string[] candidateList);
+
     string[] public candidateList;
     uint256 public totalVotesCasted;
 
     mapping(string => uint256) public votesReceived;
 
-    constructor(string[] memory _candidateNames) {
-        console.log("Deploying a Voting contract:");
+    function setCandidates (string[] memory _candidateNames) public {
         for (uint i = 0; i < _candidateNames.length; i++) {
             candidateList.push(_candidateNames[i]);
         }
+        emit NewCandidates(_candidateNames);
     }
 
     function totalVotes (string memory _candidate) public view returns (uint256) {

@@ -22,7 +22,7 @@ async function main() {
   console.log("Greeter deployed to:", greeter.address);
 
   const Voting = await ethers.getContractFactory("Voting");
-  const voting = await Voting.deploy(["Jasmine", "Nikolai", "Jeanne"]);
+  const voting = await Voting.deploy();
 
   await voting.deployed();
 
