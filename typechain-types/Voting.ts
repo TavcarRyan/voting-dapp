@@ -21,6 +21,7 @@ export interface VotingInterface extends utils.Interface {
   functions: {
     "candidateList(uint256)": FunctionFragment;
     "totalVotes(string)": FunctionFragment;
+    "totalVotesCasted()": FunctionFragment;
     "voteForCandidate(string)": FunctionFragment;
     "votesReceived(string)": FunctionFragment;
   };
@@ -30,6 +31,10 @@ export interface VotingInterface extends utils.Interface {
     values: [BigNumberish]
   ): string;
   encodeFunctionData(functionFragment: "totalVotes", values: [string]): string;
+  encodeFunctionData(
+    functionFragment: "totalVotesCasted",
+    values?: undefined
+  ): string;
   encodeFunctionData(
     functionFragment: "voteForCandidate",
     values: [string]
@@ -44,6 +49,10 @@ export interface VotingInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "totalVotes", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "totalVotesCasted",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "voteForCandidate",
     data: BytesLike
@@ -93,6 +102,8 @@ export interface Voting extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[BigNumber]>;
 
+    totalVotesCasted(overrides?: CallOverrides): Promise<[BigNumber]>;
+
     voteForCandidate(
       _candidate: string,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -107,6 +118,8 @@ export interface Voting extends BaseContract {
   candidateList(arg0: BigNumberish, overrides?: CallOverrides): Promise<string>;
 
   totalVotes(_candidate: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+  totalVotesCasted(overrides?: CallOverrides): Promise<BigNumber>;
 
   voteForCandidate(
     _candidate: string,
@@ -125,6 +138,8 @@ export interface Voting extends BaseContract {
       _candidate: string,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
+
+    totalVotesCasted(overrides?: CallOverrides): Promise<BigNumber>;
 
     voteForCandidate(
       _candidate: string,
@@ -147,6 +162,8 @@ export interface Voting extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    totalVotesCasted(overrides?: CallOverrides): Promise<BigNumber>;
+
     voteForCandidate(
       _candidate: string,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -165,6 +182,8 @@ export interface Voting extends BaseContract {
       _candidate: string,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
+
+    totalVotesCasted(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     voteForCandidate(
       _candidate: string,

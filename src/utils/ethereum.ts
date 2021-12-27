@@ -1,6 +1,5 @@
 import { ethers } from "ethers";
-import Greeter from "../artifacts/contracts/Greeter.sol/Greeter.json";
-import Voting from "../artifacts/contracts/Voting.sol/Voting.json";
+declare let window: any;
 
 // Check for MetaMask wallet browser extension
 function hasEthereum() {
@@ -9,20 +8,19 @@ function hasEthereum() {
   );
 }
 
-async function getContract() {
+async function getContract(abi: any) {
   if (!hasEthereum()) {
     console.log(`MetaMask unavailable`);
     return;
   }
   const provider = new ethers.providers.Web3Provider(window.ethereum);
   const signer = provider.getSigner();
-  const signerAddress = await signer.getAddress();
   const contract = new ethers.Contract(
     process.env.REACT_APP_PRIVATE_KEY,
-    Voting.abi,
+    abi,
     signer
   );
-  return contract;
+  return { contract, signer };
 }
 
 export { hasEthereum, getContract };

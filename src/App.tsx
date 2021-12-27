@@ -1,36 +1,73 @@
+// REACT
 import React from "react";
+
+// MATERIAL-UI
+import { Container, Grid } from "@material-ui/core";
+
+// COMPONENTS
+import Card from "./components/Card/Card";
+
+// CONTRACT
+import Voting from "./artifacts/contracts/Voting.sol/Voting.json";
+import useContract from "./utils/useContract";
+import { hasEthereum } from "./utils/ethereum";
+
+// ASSETS
 import "./App.css";
 import { ethers } from "ethers";
-import { hasEthereum } from "./utils/ethereum";
-import Voting from "./artifacts/contracts/Voting.sol/Voting.json";
 
 /*eslint no-implicit-globals: "error"*/
 declare let window: any;
 
+interface CandidateVotes {
+  [candidate: string]: number;
+}
+
 function App() {
   const [candidate, setCandidate] = React.useState("");
   const [totalVotes, setTotalVotes] = React.useState(0);
+  const [candidateVotes, setCandidateVotes] = React.useState<CandidateVotes>({
+    jasmine: 0,
+    nikolai: 0,
+    jeanne: 0,
+  });
   const [connectedWalletAddress, setConnectedWalletAddressState] =
     React.useState("");
 
-  // If wallet is already connected...
-  React.useEffect(() => {
+  const { signerContract, providerContract, signer, provider } = useContract(
+    Voting.abi
+  );
+
+  function capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  }
+
+  const validateMetaMask = () => {
     if (!hasEthereum()) {
       setConnectedWalletAddressState(`MetaMask unavailable`);
       return;
     }
-    async function setConnectedWalletAddress() {
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const signer = provider.getSigner();
-      try {
-        const signerAddress = await signer.getAddress();
-        setConnectedWalletAddressState(`Connected wallet: ${signerAddress}`);
-      } catch {
-        setConnectedWalletAddressState("No wallet connected");
-        return;
+  };
+
+  React.useEffect(() => {
+    validateMetaMask();
+
+    const getCandidateVotes = async () => {
+      await requestAccount();
+
+      const signerAddress = await signer.getAddress();
+      setConnectedWalletAddressState(`Connected wallet: ${signerAddress}`);
+      for (const key in candidateVotes) {
+        const count = await providerContract.totalVotes(
+          capitalizeFirstLetter(key)
+        );
+        setCandidateVotes((prev) => ({
+          ...prev,
+          [key]: count.toNumber(),
+        }));
       }
-    }
-    setConnectedWalletAddress();
+    };
+    getCandidateVotes();
   }, []);
 
   // Request access to MetaMask account
@@ -38,83 +75,60 @@ function App() {
     await window.ethereum.request({ method: "eth_requestAccounts" });
   }
 
-  const voteForCandidate = async () => {
-    if (!hasEthereum()) {
-      setConnectedWalletAddressState(`MetaMask unavailable`);
-      return;
-    }
+  const getTotalVotes = async (name: string) => {
+    const candidateVotes = await providerContract.totalVotes(
+      capitalizeFirstLetter(name)
+    );
+    const allVotes = await providerContract.totalVotesCasted();
+    setTotalVotes(allVotes.toNumber());
+    setCandidateVotes((prev) => ({
+      ...prev,
+      [name.toLowerCase()]: candidateVotes.toNumber(),
+    }));
+  };
+
+  const voteForCandidate = async (name: string) => {
+    validateMetaMask();
 
     await requestAccount();
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const signer = provider.getSigner();
     const signerAddress = await signer.getAddress();
 
     setConnectedWalletAddressState(`Connected wallet: ${signerAddress}`);
 
-    const contract = new ethers.Contract(
-      process.env.REACT_APP_PRIVATE_KEY,
-      Voting.abi,
-      signer
-    );
     try {
-      console.log(contract);
-      const transaction = await contract.voteForCandidate(candidate);
-      alert(
-        "Vote has been submitted. The vote count will increment as soon as the vote is recorded on the blockchain. Please wait."
+      const transaction = await signerContract.voteForCandidate(
+        capitalizeFirstLetter(name)
       );
       setCandidate("");
       await transaction.wait();
 
-      const count = await contract.totalVotes(candidate);
-      setTotalVotes(count.toNumber());
+      getTotalVotes(name);
     } catch (error) {
       console.error(error);
     }
   };
 
   return (
-    <div className="App">
-      <h1>A Simple Hello World Voting Application</h1>
-      <div className="table-responsive">
-        <table className="table table-bordered">
-          <thead>
-            <tr>
-              <th>Candidate</th>
-              <th>Votes</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Jasmine</td>
-              <td id="candidate-1"></td>
-            </tr>
-            <tr>
-              <td>Nikolai</td>
-              <td id="candidate-2"></td>
-            </tr>
-            <tr>
-              <td>Jeanne</td>
-              <td id="candidate-3"></td>
-            </tr>
-          </tbody>
-        </table>
+    <Container className="App">
+      <h1>A Simple Voting Application</h1>
+      <div>
+        {Object.keys(candidateVotes).map((el) => (
+          <Grid key={el}>
+            <Card
+              name={el}
+              onClick={voteForCandidate}
+              votes={candidateVotes[el]}
+            />
+          </Grid>
+        ))}
       </div>
-      <input
-        type="text"
-        id="candidate"
-        value={candidate}
-        onChange={(e) => setCandidate(e.target.value)}
-      />
-      <button onClick={voteForCandidate} className="btn btn-primary">
-        Vote
-      </button>
-      <div>Total Votes: {totalVotes}</div>
+      <div>Total votes casted: {totalVotes}</div>
       <div className="h-4">
         {connectedWalletAddress && (
           <p className="text-md">{connectedWalletAddress}</p>
         )}
       </div>
-    </div>
+    </Container>
   );
 }
 

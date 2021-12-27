@@ -6,6 +6,7 @@ import "hardhat/console.sol";
 contract Voting {
 
     string[] public candidateList;
+    uint256 public totalVotesCasted;
 
     mapping(string => uint256) public votesReceived;
 
@@ -22,6 +23,7 @@ contract Voting {
 
     function voteForCandidate(string memory _candidate) public {
         require(validateCandidate(_candidate));
+        totalVotesCasted += 1;
         votesReceived[_candidate] += 1;
     }
 
