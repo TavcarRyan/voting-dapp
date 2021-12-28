@@ -42,6 +42,7 @@ const Sidebar = () => {
 
         const allVotes = await providerContract.totalVotesCasted();
         setTotalVotes(allVotes.toNumber());
+
         setWalletConnected(true);
       }
     };
