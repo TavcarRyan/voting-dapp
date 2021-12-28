@@ -2,18 +2,73 @@
 import React from "react";
 
 // MATERIAL-UI
-import { Button, Container, Grid, Paper, Typography } from "@material-ui/core";
+import { Button, Grid, Paper, Typography } from "@material-ui/core";
 
 // COMPONENTS
 
 // CONTRACT
+import Voting from "../../artifacts/contracts/Voting.sol/Voting.json";
 
 // ASSETS
 import { SidebarStyles } from "./styles";
-import { SidebarProps } from "./types";
+import useContract from "../../utils/useContract";
+import { hasEthereum } from "../../utils/ethereum";
 
-const Sidebar = (props: SidebarProps) => {
+declare let window: any;
+
+const Sidebar = () => {
   const classes = SidebarStyles();
+
+  const [blockHeight, setBlockHeight] = React.useState<null | number>(null);
+  const [totalVotes, setTotalVotes] = React.useState(0);
+  const [connectedWalletAddress, setConnectedWalletAddressState] =
+    React.useState("");
+  const [membership, setMembership] = React.useState<string>("");
+  const [walletConnected, setWalletConnected] = React.useState<boolean>(false);
+
+  const { providerContract, signer, provider } = useContract(Voting.abi);
+
+  React.useEffect(() => {
+    const initialLoad = async () => {
+      if (walletConnected || hasEthereum()) {
+        const tempMembership = await providerContract.getMembership();
+        setMembership(tempMembership);
+
+        const signerAddress = await signer.getAddress();
+        setConnectedWalletAddressState(signerAddress);
+
+        const tempBlockHeight = await provider.getBlockNumber();
+        setBlockHeight(tempBlockHeight);
+
+        const allVotes = await providerContract.totalVotesCasted();
+        setTotalVotes(allVotes.toNumber());
+        setWalletConnected(true);
+      }
+    };
+
+    initialLoad();
+  }, [walletConnected]);
+
+  async function requestAccount() {
+    return await window.ethereum.request({ method: "eth_requestAccounts" });
+  }
+
+  const connectMetaMask = async () => {
+    try {
+      const isConnected = await requestAccount();
+      if (isConnected) {
+        const signerAddress = await signer.getAddress();
+        setConnectedWalletAddressState(signerAddress);
+
+        const tempMembership = await providerContract.getMembership();
+        setMembership(tempMembership);
+
+        setWalletConnected(true);
+      }
+    } catch (error) {
+      console.error("Could not connect to Metamask.");
+    }
+  };
 
   const formatAddress = (address: string): string => {
     const splitStartAddress = address.slice(0, 6);
@@ -34,7 +89,7 @@ const Sidebar = (props: SidebarProps) => {
             <Typography className={classes.title}>Latest Block</Typography>
           </Grid>
           <Grid item xs={8} container justifyContent="flex-end">
-            <Typography>{props.blockHeight} blocks</Typography>
+            <Typography>{blockHeight} blocks</Typography>
           </Grid>
         </Grid>
         <Grid
@@ -48,9 +103,17 @@ const Sidebar = (props: SidebarProps) => {
             <Typography className={classes.title}>Connected Wallet</Typography>
           </Grid>
           <Grid item xs={8} container justifyContent="flex-end">
-            <Typography>
-              {formatAddress(props.connectedWalletAddress)}
-            </Typography>
+            {walletConnected ? (
+              <Typography>{formatAddress(connectedWalletAddress)}</Typography>
+            ) : (
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={connectMetaMask}
+              >
+                Connect wallet
+              </Button>
+            )}
           </Grid>
         </Grid>
         <Grid
@@ -64,7 +127,7 @@ const Sidebar = (props: SidebarProps) => {
             <Typography className={classes.title}>Total Votes</Typography>
           </Grid>
           <Grid item xs={8} container justifyContent="flex-end">
-            <Typography>{props.totalVotes}</Typography>
+            <Typography>{totalVotes}</Typography>
           </Grid>
         </Grid>
         <Grid
@@ -78,7 +141,7 @@ const Sidebar = (props: SidebarProps) => {
             <Typography className={classes.title}>Membership</Typography>
           </Grid>
           <Grid item xs={8} container justifyContent="flex-end">
-            <Typography>{props.membership}</Typography>
+            <Typography>{membership}</Typography>
           </Grid>
         </Grid>
         <Grid

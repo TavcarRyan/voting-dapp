@@ -28,170 +28,52 @@ interface Candidates {
 const n = 10;
 
 function App() {
-  const [newCandidate, setNewCandidate] = React.useState("");
-
-  const [candidate1, setCandidate1] = React.useState("");
-  const [candidate2, setCandidate2] = React.useState("");
-  const [candidate3, setCandidate3] = React.useState("");
-
   const [candidateList, setCandidateList] = React.useState([
     {
       name: "John Doe",
       votes: 0,
     },
   ]);
-  const [inputs, setInputs] = React.useState<string[]>(["input-0"]);
-  const inputRef = React.useRef<HTMLInputElement>(null);
 
-  const { signerContract, providerContract, signer, provider } = useContract(
-    Voting.abi
-  );
-
-  const [blockHeight, setBlockHeight] = React.useState<null | number>(null);
-  const [totalVotes, setTotalVotes] = React.useState(0);
-  const [connectedWalletAddress, setConnectedWalletAddressState] =
-    React.useState("Connected wallet:");
-  const [membership, setMembership] = React.useState<string>("");
-
-  function capitalizeFirstLetter(string) {
-    return string.charAt(0).toUpperCase() + string.slice(1);
-  }
-
-  const validateMetaMask = () => {
-    if (!hasEthereum()) {
-      setConnectedWalletAddressState(`MetaMask unavailable`);
-      return;
-    }
-  };
+  // function capitalizeFirstLetter(string) {
+  //   return string.charAt(0).toUpperCase() + string.slice(1);
+  // }
 
   // Request access to MetaMask account
-  async function requestAccount() {
-    await window.ethereum.request({ method: "eth_requestAccounts" });
-  }
+  // async function requestAccount() {
+  //   await window.ethereum.request({ method: "eth_requestAccounts" });
+  // }
 
-  const getTotalVotes = async (name: string) => {
-    const candidateVotes = await providerContract.totalVotes(
-      capitalizeFirstLetter(name)
-    );
-    const allVotes = await providerContract.totalVotesCasted();
-    setTotalVotes(allVotes.toNumber());
-    const newCandidateList = candidateList.filter((el) => {
-      console.log("el: ", el);
-    });
-  };
+  // const appendInput = () => {
+  //   const newInput = `input-${inputs.length}`;
+  //   setInputs((prev) => [...prev, newInput]);
+  //   setCandidateList((prev) => [...prev, { name: newCandidate, votes: 0 }]);
 
-  const voteForCandidate = async (name: string) => {
-    validateMetaMask();
+  //   if (inputRef.current !== null) {
+  //     inputRef.current.value = "";
+  //   }
+  // };
 
-    await requestAccount();
-    const signerAddress = await signer.getAddress();
-
-    setConnectedWalletAddressState(`Connected wallet: ${signerAddress}`);
-
-    try {
-      const transaction = await signerContract.voteForCandidate(
-        capitalizeFirstLetter(name)
-      );
-      await transaction.wait();
-
-      getTotalVotes(name);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const submitForm = async (event: any) => {
-    event.preventDefault();
-    validateMetaMask();
-    await requestAccount();
-    const signerAddress = await signer.getAddress();
-    setConnectedWalletAddressState(`Connected wallet: ${signerAddress}`);
-    const candidateNames = candidateList.map((el) => el.name);
-
-    try {
-      const transaction = await signerContract.setCandidates(candidateNames);
-
-      await transaction.wait();
-
-      signerContract.on("NewCandidates", (candidateList, event) => {
-        console.log(event);
-        for (const idx of candidateList) {
-          console.log(`Candidate added: `, candidateList[idx]);
-        }
-      });
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const appendInput = () => {
-    const newInput = `input-${inputs.length}`;
-    setInputs((prev) => [...prev, newInput]);
-    setCandidateList((prev) => [...prev, { name: newCandidate, votes: 0 }]);
-
-    if (inputRef.current !== null) {
-      inputRef.current.value = "";
-    }
-  };
-
-  React.useEffect(() => {
-    validateMetaMask();
-    const initialLoad = async () => {
-      const tempBlockHeight = await provider.getBlockNumber();
-      setBlockHeight(tempBlockHeight);
-
-      const signerAddress = await signer.getAddress();
-      setConnectedWalletAddressState(signerAddress);
-
-      const allVotes = await providerContract.totalVotesCasted();
-      setTotalVotes(allVotes.toNumber());
-
-      const tempMembership = await providerContract.getMembership();
-      setMembership(tempMembership);
-    };
-
-    initialLoad();
-  }, []);
+  const voteForCandidate = () => {};
 
   return (
-    <Container className="App" style={{ border: "1px solid red" }}>
+    <Container className="App">
       <h1>My First Dapp - Voting Application</h1>
       <Grid container>
-        <Grid item xs={12} md={8} style={{ border: "1px solid blue" }}>
-          {/* <Grid
-            item
-            xs={12}
-            container
-            alignItems="center"
-            justifyContent="space-between"
-          >
-            <Grid item xs={6}>
-              Total votes casted: {totalVotes}
-            </Grid>
-            <Grid item xs={6}>
-              {connectedWalletAddress && <p>{connectedWalletAddress}</p>}
-            </Grid>
-          </Grid> */}
-
+        <Grid item xs={12} md={8}>
           {candidateList.map((candidate, i) => (
             <div key={candidate.name} style={{ width: "100%" }}>
-              <Grid>
-                <Card
-                  name={candidate.name}
-                  onClick={voteForCandidate}
-                  votes={candidate.votes}
-                />
-              </Grid>
+              <Card
+                name={candidate.name}
+                onClick={voteForCandidate}
+                votes={candidate.votes}
+              />
             </div>
           ))}
         </Grid>
-        <Grid item xs={12} md={4} style={{ border: "1px solid blue" }}>
-          <Sidebar
-            blockHeight={blockHeight}
-            connectedWalletAddress={connectedWalletAddress}
-            totalVotes={totalVotes}
-            membership={membership}
-          />
+
+        <Grid item xs={12} md={4}>
+          <Sidebar />
         </Grid>
       </Grid>
       {/* <Grid container>

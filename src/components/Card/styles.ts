@@ -6,7 +6,6 @@ export const CardStyles = makeStyles((theme: Theme) =>
     container: {
       height: "100px",
       border: "1px solid black",
-      margin: "20px 0px",
     },
   })
 );
