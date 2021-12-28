@@ -20,6 +20,7 @@ import { TypedEventFilter, TypedEvent, TypedListener, OnEvent } from "./common";
 export interface VotingInterface extends utils.Interface {
   functions: {
     "candidateList(uint256)": FunctionFragment;
+    "getMembership()": FunctionFragment;
     "setCandidates(string[])": FunctionFragment;
     "totalVotes(string)": FunctionFragment;
     "totalVotesCasted()": FunctionFragment;
@@ -30,6 +31,10 @@ export interface VotingInterface extends utils.Interface {
   encodeFunctionData(
     functionFragment: "candidateList",
     values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getMembership",
+    values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "setCandidates",
@@ -51,6 +56,10 @@ export interface VotingInterface extends utils.Interface {
 
   decodeFunctionResult(
     functionFragment: "candidateList",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getMembership",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -117,6 +126,8 @@ export interface Voting extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[string]>;
 
+    getMembership(overrides?: CallOverrides): Promise<[string]>;
+
     setCandidates(
       _candidateNames: string[],
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -142,6 +153,8 @@ export interface Voting extends BaseContract {
 
   candidateList(arg0: BigNumberish, overrides?: CallOverrides): Promise<string>;
 
+  getMembership(overrides?: CallOverrides): Promise<string>;
+
   setCandidates(
     _candidateNames: string[],
     overrides?: Overrides & { from?: string | Promise<string> }
@@ -163,6 +176,8 @@ export interface Voting extends BaseContract {
       arg0: BigNumberish,
       overrides?: CallOverrides
     ): Promise<string>;
+
+    getMembership(overrides?: CallOverrides): Promise<string>;
 
     setCandidates(
       _candidateNames: string[],
@@ -195,6 +210,8 @@ export interface Voting extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    getMembership(overrides?: CallOverrides): Promise<BigNumber>;
+
     setCandidates(
       _candidateNames: string[],
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -220,6 +237,8 @@ export interface Voting extends BaseContract {
       arg0: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
+
+    getMembership(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     setCandidates(
       _candidateNames: string[],

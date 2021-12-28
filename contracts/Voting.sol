@@ -5,11 +5,14 @@ import "hardhat/console.sol";
 
 contract Voting {
 
+    enum Membership { DEFAULT, CITIZEN, DIAMOND }
+
     event NewCandidates(string[] candidateList);
 
     string[] public candidateList;
     uint256 public totalVotesCasted;
 
+    mapping(address => Membership) private hosts;
     mapping(string => uint256) public votesReceived;
 
     function setCandidates (string[] memory _candidateNames) public {
@@ -36,5 +39,18 @@ contract Voting {
             }
         }
         return false;
+    }
+
+    function _getMembershipKeyByValue(Membership _membership) private pure returns (string memory) {
+        // Loop through possible options
+        if (Membership.DEFAULT == _membership) return "Free";
+        if (Membership.CITIZEN == _membership) return "Citizen";
+        if (Membership.DIAMOND == _membership) return "Diamond";
+
+    }
+
+    function getMembership() public view returns (string memory) {
+        Membership _membership = hosts[msg.sender]; 
+        return _getMembershipKeyByValue(_membership);
     }
 }
