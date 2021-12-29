@@ -1,7 +1,7 @@
 import React from "react";
 
 // MATERIAL-UI
-import { Button, Grid, Typography } from "@material-ui/core";
+import { Button, Grid, Typography, Paper } from "@material-ui/core";
 import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
 import HowToVoteIcon from "@mui/icons-material/HowToVote";
 import DateRangeIcon from "@mui/icons-material/DateRange";
@@ -44,28 +44,32 @@ const Card = (props: CardProps) => {
   };
 
   return (
-    <Grid container className={classes.container}>
-      <Grid
-        item
-        xs={12}
-        container
-        justifyContent="center"
-        alignItems="center"
-        className={classes.innerContainer}
-      >
-        <Grid item xs={10}>
-          <Typography>{props.poll.title}</Typography>
+    <Paper elevation={3} className={classes.outerContainer}>
+      <Grid container className={classes.container}>
+        <Grid
+          item
+          xs={12}
+          container
+          justifyContent="center"
+          alignItems="center"
+          className={classes.innerContainer}
+        >
+          <Grid item xs={10}>
+            <Typography className={classes.title}>
+              {props.poll.title}
+            </Typography>
+          </Grid>
+        </Grid>
+        <Grid item xs={12} container className={classes.innerContainer}>
+          <PollDetails
+            icon={<PersonOutlineIcon />}
+            data={formatAddress(props.poll.address)}
+          />
+          <PollDetails icon={<HowToVoteIcon />} data={props.poll.totalVotes} />
+          <PollDetails icon={<DateRangeIcon />} data="28th December 2021" />
         </Grid>
       </Grid>
-      <Grid item xs={12} container className={classes.innerContainer}>
-        <PollDetails
-          icon={<PersonOutlineIcon />}
-          data={formatAddress(props.poll.address)}
-        />
-        <PollDetails icon={<HowToVoteIcon />} data={props.poll.totalVotes} />
-        <PollDetails icon={<DateRangeIcon />} data="28th December 2021" />
-      </Grid>
-    </Grid>
+    </Paper>
   );
 };
 
