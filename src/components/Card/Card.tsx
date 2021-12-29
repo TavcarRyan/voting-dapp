@@ -2,13 +2,24 @@ import React from "react";
 
 // MATERIAL-UI
 import { Button, Grid, Typography } from "@material-ui/core";
+import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
+import HowToVoteIcon from "@mui/icons-material/HowToVote";
+import DateRangeIcon from "@mui/icons-material/DateRange";
+
+// COMPONENTS
+import PollDetails from "./PollDetails";
 
 // ASSETS
 import { CardStyles } from "./styles";
 
+interface Poll {
+  title: string;
+  address: string;
+  totalVotes: number;
+}
+
 interface CardProps {
-  name: string;
-  votes: number;
+  poll: Poll;
   onClick: (name: string) => void;
 }
 
@@ -26,31 +37,33 @@ const Card = (props: CardProps) => {
     setColor(colors[color]);
   };
 
+  const formatAddress = (address: string): string => {
+    const splitStartAddress = address.slice(0, 6);
+    const splitEndAddress = address.slice(-6);
+    return `${splitStartAddress}...${splitEndAddress}`;
+  };
+
   return (
     <Grid container className={classes.container}>
       <Grid
         item
         xs={12}
         container
-        className="w3-light-grey"
-        style={{ height: "2px" }}
+        justifyContent="center"
+        alignItems="center"
+        className={classes.innerContainer}
       >
-        <Grid
-          item
-          className={`w3-container w3-${color} w3-center`}
-          style={{ width: `${props.votes}0%`, height: "2px" }}
-        ></Grid>
+        <Grid item xs={10}>
+          <Typography>{props.poll.title}</Typography>
+        </Grid>
       </Grid>
-      <Grid item xs={6}>
-        <Typography>{props.name}</Typography>
-        <Typography>{props.votes}</Typography>
-      </Grid>
-      <Grid item xs={6}>
-        <Button
-          variant="contained"
-          style={{ backgroundColor: color, color: "#fff" }}
-          onClick={() => props.onClick(props.name)}
-        >{`Vote ${props.name}`}</Button>
+      <Grid item xs={12} container className={classes.innerContainer}>
+        <PollDetails
+          icon={<PersonOutlineIcon />}
+          data={formatAddress(props.poll.address)}
+        />
+        <PollDetails icon={<HowToVoteIcon />} data={props.poll.totalVotes} />
+        <PollDetails icon={<DateRangeIcon />} data="28th December 2021" />
       </Grid>
     </Grid>
   );

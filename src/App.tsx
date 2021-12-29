@@ -25,7 +25,28 @@ interface Candidates {
   votes: number;
 }
 
-const n = 10;
+const DUMMY_POLLS = [
+  {
+    title: "What is the best cryptocurrency?!",
+    address: "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+    totalVotes: 19,
+  },
+  {
+    title: "What is the best seasoning?",
+    address: "0x71be63f3384f5fb98995898a86b02fb2426c5788",
+    totalVotes: 27,
+  },
+  {
+    title: "Are you happy?",
+    address: "0x9965507d1a55bcc2695c58ba16fb37d819b0a4dc",
+    totalVotes: 56,
+  },
+  {
+    title: "Linux vs Mac vs Windows",
+    address: "0xfabb0ac9d68b0b445fb7357272ff202c5651694a",
+    totalVotes: 12,
+  },
+];
 
 function App() {
   const [candidateList, setCandidateList] = React.useState([
@@ -61,13 +82,9 @@ function App() {
       <h1>My First Dapp - Voting Application</h1>
       <Grid container>
         <Grid item xs={12} md={8}>
-          {candidateList.map((candidate, i) => (
-            <div key={candidate.name} style={{ width: "100%" }}>
-              <Card
-                name={candidate.name}
-                onClick={voteForCandidate}
-                votes={candidate.votes}
-              />
+          {DUMMY_POLLS.map((poll, i) => (
+            <div key={i} style={{ width: "100%" }}>
+              <Card poll={poll} onClick={voteForCandidate} />
             </div>
           ))}
         </Grid>
@@ -76,58 +93,6 @@ function App() {
           <Sidebar />
         </Grid>
       </Grid>
-      {/* <Grid container>
-        <Grid
-          item
-          xs={12}
-          container
-          alignItems="center"
-          justifyContent="space-between"
-        >
-          <Grid item xs={6}>
-            Total votes casted: {totalVotes}
-          </Grid>
-          <Grid item xs={6}>
-            {connectedWalletAddress && <p>{connectedWalletAddress}</p>}
-          </Grid>
-        </Grid>
-
-        {candidateList.map((candidate, i) => (
-          <div key={candidate.name} style={{ width: "100%" }}>
-            <Grid>
-              <Card
-                name={candidate.name}
-                onClick={voteForCandidate}
-                votes={candidate.votes}
-              />
-            </Grid>
-          </div>
-        ))}
-
-        <form onSubmit={submitForm} style={{ width: "100%" }}>
-          <Grid container>
-            <Grid item xs={10} container>
-              <input
-                type="text"
-                ref={inputRef}
-                onChange={(e) => setNewCandidate(e.target.value)}
-                style={{ width: "80%" }}
-              />
-              <Button
-                color="secondary"
-                variant="contained"
-                onClick={appendInput}
-              >
-                Add
-              </Button>
-            </Grid>
-
-            <Grid item xs={2} container justifyContent="flex-end">
-              <button type="submit">Submit candidates</button>
-            </Grid>
-          </Grid>
-        </form>
-      </Grid> */}
     </Container>
   );
 }
