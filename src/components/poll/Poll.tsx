@@ -2,7 +2,7 @@
 import React from "react";
 
 // MATERIAL-UI
-import { Modal, Grid, Typography } from "@material-ui/core";
+import { Modal, Grid } from "@material-ui/core";
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 
@@ -12,6 +12,7 @@ import PieChart from "../common/PieChart";
 
 // ASSETS
 import { PollStyles } from "./styles";
+import PollOption from "./PollOption";
 
 interface PollProps {
   togglePoll: boolean;
@@ -37,15 +38,11 @@ const DUMMY_POLL_DATA = [
   },
 ];
 
-const POLL_COLORS = ["red", "green", "blue", "pink", "purple"];
-
 const Poll = (props: PollProps) => {
   const classes = PollStyles();
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
-
-  const [isHovered, setIsHovered] = React.useState(-1);
 
   const assembleLabels = (): string[] => {
     return DUMMY_POLL_DATA.map((el) => el.option);
@@ -53,14 +50,6 @@ const Poll = (props: PollProps) => {
 
   const assembleSeries = (): number[] => {
     return DUMMY_POLL_DATA.map((el) => el.votes);
-  };
-
-  const showCartHandler = (i) => {
-    setIsHovered(i);
-  };
-
-  const hideCartHandler = () => {
-    setIsHovered(-1);
   };
 
   return (
@@ -82,47 +71,7 @@ const Poll = (props: PollProps) => {
           className={classes.option}
         >
           {DUMMY_POLL_DATA.map((poll, i) => (
-            <Grid
-              key={poll.option}
-              item
-              xs={12}
-              container
-              className={classes.poll}
-              onMouseLeave={hideCartHandler}
-              onMouseEnter={() => showCartHandler(i)}
-            >
-              <Grid item xs={12} container justifyContent="space-between">
-                <Typography>{poll.option}</Typography>
-                {isHovered === i && (
-                  <Typography className={classes.voteText}>Vote!</Typography>
-                )}
-              </Grid>
-
-              <Grid
-                container
-                alignItems="center"
-                justifyContent="space-between"
-              >
-                <Grid item xs={10} className="w3-light-grey">
-                  <Grid
-                    item
-                    className={`w3-container w3-${POLL_COLORS[i]} w3-center`}
-                    style={{ width: `${poll.votes}%`, height: "2px" }}
-                  ></Grid>
-                </Grid>
-
-                <Grid
-                  item
-                  xs
-                  style={{
-                    marginLeft: "10px",
-                    maxWidth: "fit-content",
-                  }}
-                >
-                  <Typography>{poll.votes}%</Typography>
-                </Grid>
-              </Grid>
-            </Grid>
+            <PollOption poll={poll} index={i} />
           ))}
         </Grid>
         <Grid
