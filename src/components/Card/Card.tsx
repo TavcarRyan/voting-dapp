@@ -1,13 +1,13 @@
 import React from "react";
 
 // MATERIAL-UI
-import { Button, Grid, Typography, Paper } from "@material-ui/core";
+import { Grid, Typography, Paper } from "@material-ui/core";
 import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
 import HowToVoteIcon from "@mui/icons-material/HowToVote";
 import DateRangeIcon from "@mui/icons-material/DateRange";
 
 // COMPONENTS
-import PollDetails from "./PollDetails";
+import PollDetails from "./CardDetails";
 
 // ASSETS
 import { CardStyles } from "./styles";
@@ -20,22 +20,12 @@ interface Poll {
 
 interface CardProps {
   poll: Poll;
+  togglePollModal: () => void;
   onClick: (name: string) => void;
 }
 
 const Card = (props: CardProps) => {
   const classes = CardStyles();
-  const [color, setColor] = React.useState("");
-
-  React.useEffect(() => {
-    randomColor();
-  }, []);
-
-  const randomColor = () => {
-    const colors = ["red", "green", "blue", "pink", "purple"];
-    const color = Math.floor(Math.random() * (5 - 0) + 0);
-    setColor(colors[color]);
-  };
 
   const formatAddress = (address: string): string => {
     const splitStartAddress = address.slice(0, 6);
@@ -44,7 +34,11 @@ const Card = (props: CardProps) => {
   };
 
   return (
-    <Paper elevation={3} className={classes.outerContainer}>
+    <Paper
+      elevation={3}
+      className={classes.outerContainer}
+      onClick={props.togglePollModal}
+    >
       <Grid container className={classes.container}>
         <Grid
           item

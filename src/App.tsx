@@ -2,23 +2,24 @@
 import React from "react";
 
 // MATERIAL-UI
-import { Button, Container, Grid } from "@material-ui/core";
+import { Container, Grid } from "@material-ui/core";
 
 // COMPONENTS
 import Card from "./components/card/Card";
+import Poll from "./components/poll/Poll";
 
 // CONTRACT
-import Voting from "./artifacts/contracts/Voting.sol/Voting.json";
-import useContract from "./utils/useContract";
-import { hasEthereum } from "./utils/ethereum";
+// import Voting from "./artifacts/contracts/Voting.sol/Voting.json";
+// import useContract from "./utils/useContract";
+// import { hasEthereum } from "./utils/ethereum";
 
 // ASSETS
 import "./App.css";
-import { ethers } from "ethers";
+// import { ethers } from "ethers";
 import Sidebar from "./components/sidebar/Sidebar";
 
 /*eslint no-implicit-globals: "error"*/
-declare let window: any;
+// declare let window: any;
 
 interface Candidates {
   name: string;
@@ -49,12 +50,7 @@ const DUMMY_POLLS = [
 ];
 
 function App() {
-  const [candidateList, setCandidateList] = React.useState([
-    {
-      name: "John Doe",
-      votes: 0,
-    },
-  ]);
+  const [togglePoll, setTogglePoll] = React.useState<boolean>(false);
 
   // function capitalizeFirstLetter(string) {
   //   return string.charAt(0).toUpperCase() + string.slice(1);
@@ -75,6 +71,10 @@ function App() {
   //   }
   // };
 
+  const togglePollModal = () => {
+    setTogglePoll((prev) => !prev);
+  };
+
   const voteForCandidate = () => {};
 
   return (
@@ -84,7 +84,11 @@ function App() {
         <Grid item xs={12} md={8}>
           {DUMMY_POLLS.map((poll, i) => (
             <div key={i} style={{ width: "100%" }}>
-              <Card poll={poll} onClick={voteForCandidate} />
+              <Card
+                poll={poll}
+                onClick={voteForCandidate}
+                togglePollModal={togglePollModal}
+              />
             </div>
           ))}
         </Grid>
@@ -93,6 +97,9 @@ function App() {
           <Sidebar />
         </Grid>
       </Grid>
+      {togglePoll && (
+        <Poll togglePoll={togglePoll} togglePollModal={togglePollModal} />
+      )}
     </Container>
   );
 }

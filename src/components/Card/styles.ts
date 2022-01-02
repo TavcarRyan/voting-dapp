@@ -5,6 +5,10 @@ export const CardStyles = makeStyles((theme: Theme) =>
   createStyles({
     outerContainer: {
       borderRadius: "6px",
+      cursor: "pointer",
+      "& :hover": {
+        backgroundColor: "#d8d8d8",
+      },
     },
     container: {
       height: "200px",
