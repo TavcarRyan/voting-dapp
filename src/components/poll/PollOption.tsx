@@ -67,27 +67,6 @@ const PollOption = (props: PollOptionProps) => {
           />
         </Grid>
       </Grid>
-
-      {/* <Grid container alignItems="center" justifyContent="space-between">
-        <Grid item xs={10} className="w3-light-grey">
-          <Grid
-            item
-            className={`w3-container w3-${POLL_COLORS[props.index]} w3-center`}
-            style={{ width: `${props.poll.votes}%`, height: "2px" }}
-          ></Grid>
-        </Grid>
-
-        <Grid
-          item
-          xs
-          style={{
-            marginLeft: "10px",
-            maxWidth: "fit-content",
-          }}
-        >
-          <Typography>{props.poll.votes}%</Typography>
-        </Grid>
-      </Grid> */}
     </Grid>
   );
 };

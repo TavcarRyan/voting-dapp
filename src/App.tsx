@@ -7,6 +7,7 @@ import { Container, Grid } from "@material-ui/core";
 // COMPONENTS
 import Card from "./components/card/Card";
 import Poll from "./components/poll/Poll";
+import Navbar from "./components/core/Navbar";
 
 // CONTRACT
 // import Voting from "./artifacts/contracts/Voting.sol/Voting.json";
@@ -78,29 +79,32 @@ function App() {
   const voteForCandidate = () => {};
 
   return (
-    <Container className="App">
-      <h1>My First Dapp - Voting Application</h1>
-      <Grid container>
-        <Grid item xs={12} md={8}>
-          {DUMMY_POLLS.map((poll, i) => (
-            <div key={i} style={{ width: "100%" }}>
-              <Card
-                poll={poll}
-                onClick={voteForCandidate}
-                togglePollModal={togglePollModal}
-              />
-            </div>
-          ))}
-        </Grid>
+    <>
+      <Navbar />
+      <Container className="App">
+        <h1>My First Dapp - Voting Application</h1>
+        <Grid container>
+          <Grid item xs={12} md={8}>
+            {DUMMY_POLLS.map((poll, i) => (
+              <div key={i} style={{ width: "100%" }}>
+                <Card
+                  poll={poll}
+                  onClick={voteForCandidate}
+                  togglePollModal={togglePollModal}
+                />
+              </div>
+            ))}
+          </Grid>
 
-        <Grid item xs={12} md={4}>
-          <Sidebar />
+          <Grid item xs={12} md={4}>
+            <Sidebar />
+          </Grid>
         </Grid>
-      </Grid>
-      {togglePoll && (
-        <Poll togglePoll={togglePoll} togglePollModal={togglePollModal} />
-      )}
-    </Container>
+        {togglePoll && (
+          <Poll togglePoll={togglePoll} togglePollModal={togglePollModal} />
+        )}
+      </Container>
+    </>
   );
 }
 
