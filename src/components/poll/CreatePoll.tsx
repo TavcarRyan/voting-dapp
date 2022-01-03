@@ -15,6 +15,10 @@ import MobileModalHeader from "../common/MobileModalHeader";
 import { PollStyles } from "./styles";
 import { Helper } from "../../utils/helpers";
 import moment from "moment";
+import { ethers } from "ethers";
+import { hasEthereum } from "../../utils/ethereum";
+import Poll from "../../artifacts/contracts/Poll.sol/Poll.json";
+import useContract from "../../utils/useContract";
 
 interface CreatePollProps {
   modalOpen: boolean;
@@ -34,13 +38,18 @@ const defaultCalendarValues = {
 };
 
 const BLOCK_TIME = 14.5;
-const BLOCK_HEIGHT = 2;
+const BLOCK_HEIGHT = 0;
 
 const CreatePoll = (props: CreatePollProps) => {
   const classes = PollStyles();
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+
+  const { signerContract, providerContract, signer, provider } = useContract(
+    Poll.abi,
+    process.env.REACT_APP_POLL_ADDRESS
+  );
 
   const [formValues, setFormValues] = React.useState(defaultValues);
   const [calendar, setCalendar] = React.useState(defaultCalendarValues);
@@ -108,9 +117,23 @@ const CreatePoll = (props: CreatePollProps) => {
     });
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     console.log(formValues);
+    const transaction = await signerContract._createPoll(
+      formValues.title,
+      formValues.options,
+      formValues.estimatedBlockHeight,
+      1
+    );
+
+    await transaction.wait();
+    console.log("transaction: ", transaction);
+  };
+
+  const getPoll = async () => {
+    const tx = await signerContract.getPoll(1);
+    console.log("tx: ", tx);
   };
 
   return (
@@ -221,6 +244,9 @@ const CreatePoll = (props: CreatePollProps) => {
             </Grid>
           </Grid>
         </form>
+        {/* <Button fullWidth variant="contained" color="primary" onClick={getPoll}>
+          get Poll
+        </Button> */}
       </Grid>
     </Modal>
   );

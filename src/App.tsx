@@ -59,25 +59,6 @@ function App() {
 
   const [togglePoll, setTogglePoll] = React.useState<boolean>(false);
 
-  // function capitalizeFirstLetter(string) {
-  //   return string.charAt(0).toUpperCase() + string.slice(1);
-  // }
-
-  // Request access to MetaMask account
-  // async function requestAccount() {
-  //   await window.ethereum.request({ method: "eth_requestAccounts" });
-  // }
-
-  // const appendInput = () => {
-  //   const newInput = `input-${inputs.length}`;
-  //   setInputs((prev) => [...prev, newInput]);
-  //   setCandidateList((prev) => [...prev, { name: newCandidate, votes: 0 }]);
-
-  //   if (inputRef.current !== null) {
-  //     inputRef.current.value = "";
-  //   }
-  // };
-
   const togglePollModal = () => {
     setTogglePoll((prev) => !prev);
   };

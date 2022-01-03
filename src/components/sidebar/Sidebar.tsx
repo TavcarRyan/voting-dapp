@@ -26,7 +26,10 @@ const Sidebar = () => {
   const [membership, setMembership] = React.useState<string>("");
   const [walletConnected, setWalletConnected] = React.useState<boolean>(false);
 
-  const { providerContract, signer, provider } = useContract(Voting.abi);
+  const { providerContract, signer, provider } = useContract(
+    Voting.abi,
+    process.env.REACT_APP_PRIVATE_KEY
+  );
 
   React.useEffect(() => {
     const initialLoad = async () => {
