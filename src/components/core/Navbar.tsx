@@ -12,11 +12,15 @@ import Button from "@mui/material/Button";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 
+// CONTEXT
+import { globalContext } from "../../context/globalContext";
+
 const pages = ["Create", "Membership"];
 const settings = ["Account", "Logout"];
 const LOGO = "W3Polls";
 
 const ResponsiveAppBar = () => {
+  const { dispatch } = React.useContext(globalContext);
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
     null
   );
@@ -31,10 +35,11 @@ const ResponsiveAppBar = () => {
     setAnchorElUser(event.currentTarget);
   };
 
-  const handleCloseNavMenu = (page: string) => {
+  const handleModalSelection = (page: string) => {
     switch (page) {
       case pages[0]:
         //open create poll modal
+        dispatch({ type: "TOGGLE_CREATE_POLL_MODAL", payload: true });
         break;
       case pages[1]:
         //open membership Modal
@@ -42,9 +47,10 @@ const ResponsiveAppBar = () => {
       default:
         setAnchorElUser(null);
     }
+    setAnchorElNav(null);
   };
 
-  const handleCloseUserMenu = () => {
+  const handleCloseNavMenu = () => {
     setAnchorElUser(null);
   };
 
@@ -91,7 +97,7 @@ const ResponsiveAppBar = () => {
               }}
             >
               {pages.map((page) => (
-                <MenuItem key={page} onClick={() => handleCloseNavMenu(page)}>
+                <MenuItem key={page} onClick={() => handleModalSelection(page)}>
                   <Typography textAlign="center">{page}</Typography>
                 </MenuItem>
               ))}
@@ -109,7 +115,7 @@ const ResponsiveAppBar = () => {
             {pages.map((page) => (
               <Button
                 key={page}
-                onClick={() => handleCloseNavMenu(page)}
+                onClick={() => handleModalSelection(page)}
                 sx={{ my: 2, color: "white", display: "block" }}
               >
                 {page}
@@ -137,10 +143,13 @@ const ResponsiveAppBar = () => {
                 horizontal: "right",
               }}
               open={Boolean(anchorElUser)}
-              onClose={handleCloseUserMenu}
+              onClose={handleCloseNavMenu}
             >
               {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
+                <MenuItem
+                  key={setting}
+                  onClick={() => handleModalSelection(setting)}
+                >
                   <Typography textAlign="center">{setting}</Typography>
                 </MenuItem>
               ))}

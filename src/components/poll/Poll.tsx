@@ -9,10 +9,10 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 // COMPONENTS
 import MobileModalHeader from "../common/MobileModalHeader";
 import PieChart from "../common/PieChart";
+import PollOption from "./PollOption";
 
 // ASSETS
 import { PollStyles } from "./styles";
-import PollOption from "./PollOption";
 
 interface PollProps {
   togglePoll: boolean;

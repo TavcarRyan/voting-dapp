@@ -7,6 +7,7 @@ import { Container, Grid } from "@material-ui/core";
 // COMPONENTS
 import Card from "./components/card/Card";
 import Poll from "./components/poll/Poll";
+import CreatePoll from "./components/poll/CreatePoll";
 import Navbar from "./components/core/Navbar";
 
 // CONTRACT
@@ -19,13 +20,16 @@ import "./App.css";
 // import { ethers } from "ethers";
 import Sidebar from "./components/sidebar/Sidebar";
 
+// CONTEXT
+import { globalContext, initialGlobalState } from "./context/globalContext";
+import { globalReducer } from "./context/globalReducer";
+
+// THEME
+import { theme } from "./utils/theme";
+import { ThemeProvider } from "@mui/material/styles";
+
 /*eslint no-implicit-globals: "error"*/
 // declare let window: any;
-
-interface Candidates {
-  name: string;
-  votes: number;
-}
 
 const DUMMY_POLLS = [
   {
@@ -51,6 +55,8 @@ const DUMMY_POLLS = [
 ];
 
 function App() {
+  const [state, dispatch] = React.useReducer(globalReducer, initialGlobalState);
+
   const [togglePoll, setTogglePoll] = React.useState<boolean>(false);
 
   // function capitalizeFirstLetter(string) {
@@ -76,35 +82,40 @@ function App() {
     setTogglePoll((prev) => !prev);
   };
 
-  const voteForCandidate = () => {};
+  const toggleCreatePollModal = () => {
+    dispatch({ type: "TOGGLE_CREATE_POLL_MODAL", payload: false });
+  };
 
   return (
-    <>
-      <Navbar />
-      <Container className="App">
-        <h1>My First Dapp - Voting Application</h1>
-        <Grid container>
-          <Grid item xs={12} md={8}>
-            {DUMMY_POLLS.map((poll, i) => (
-              <div key={i} style={{ width: "100%" }}>
-                <Card
-                  poll={poll}
-                  onClick={voteForCandidate}
-                  togglePollModal={togglePollModal}
-                />
-              </div>
-            ))}
-          </Grid>
+    <globalContext.Provider value={{ ...state, dispatch }}>
+      <ThemeProvider theme={theme}>
+        <Navbar />
+        <Container className="App">
+          <Grid container style={{ margin: "50px 0px" }}>
+            <Grid item xs={12} md={8}>
+              {DUMMY_POLLS.map((poll, i) => (
+                <div key={i} style={{ width: "100%" }}>
+                  <Card poll={poll} togglePollModal={togglePollModal} />
+                </div>
+              ))}
+            </Grid>
 
-          <Grid item xs={12} md={4}>
-            <Sidebar />
+            <Grid item xs={12} md={4}>
+              <Sidebar />
+            </Grid>
           </Grid>
-        </Grid>
-        {togglePoll && (
-          <Poll togglePoll={togglePoll} togglePollModal={togglePollModal} />
-        )}
-      </Container>
-    </>
+          {togglePoll && (
+            <Poll togglePoll={togglePoll} togglePollModal={togglePollModal} />
+          )}
+          {state.toggleCreatePollModal && (
+            <CreatePoll
+              modalOpen={state.toggleCreatePollModal}
+              toggleCreatePollModal={toggleCreatePollModal}
+            />
+          )}
+        </Container>
+      </ThemeProvider>
+    </globalContext.Provider>
   );
 }
 

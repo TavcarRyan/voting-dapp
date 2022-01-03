@@ -21,7 +21,6 @@ interface Poll {
 interface CardProps {
   poll: Poll;
   togglePollModal: () => void;
-  onClick: (name: string) => void;
 }
 
 const Card = (props: CardProps) => {
