@@ -22,19 +22,19 @@ interface PollProps {
 const DUMMY_POLL_DATA = [
   {
     option: "option 1",
-    votes: 9,
+    votes: 19,
   },
   {
     option: "option 2",
-    votes: 11,
+    votes: 90,
   },
   {
     option: "option 3",
-    votes: 8,
+    votes: 83,
   },
   {
     option: "option 4",
-    votes: 14,
+    votes: 55,
   },
 ];
 
@@ -71,7 +71,7 @@ const Poll = (props: PollProps) => {
           className={classes.option}
         >
           {DUMMY_POLL_DATA.map((poll, i) => (
-            <PollOption poll={poll} index={i} />
+            <PollOption poll={poll} index={i} key={i} />
           ))}
         </Grid>
         <Grid

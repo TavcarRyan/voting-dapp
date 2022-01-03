@@ -6,6 +6,7 @@ import { Grid, Typography } from "@material-ui/core";
 
 // ASSETS
 import { PollStyles } from "./styles";
+import ProgressBar from "@ramonak/react-progress-bar";
 
 interface Poll {
   option: string;
@@ -17,7 +18,7 @@ interface PollOptionProps {
   index: number;
 }
 
-const POLL_COLORS = ["red", "green", "blue", "pink", "purple"];
+const POLL_COLORS = ["#FFC246", "#07BB62", "#5470DE", "#6F6F6F"];
 
 const PollOption = (props: PollOptionProps) => {
   const classes = PollStyles();
@@ -38,7 +39,6 @@ const PollOption = (props: PollOptionProps) => {
 
   return (
     <Grid
-      key={props.poll.option}
       item
       xs={12}
       container
@@ -55,6 +55,20 @@ const PollOption = (props: PollOptionProps) => {
       </Grid>
 
       <Grid container alignItems="center" justifyContent="space-between">
+        <Grid item xs={11}>
+          <ProgressBar
+            completed={props.poll.votes}
+            bgColor={POLL_COLORS[props.index]}
+            height="15px"
+            labelColor="#000000"
+            labelAlignment="outside"
+            animateOnRender
+            maxCompleted={100}
+          />
+        </Grid>
+      </Grid>
+
+      {/* <Grid container alignItems="center" justifyContent="space-between">
         <Grid item xs={10} className="w3-light-grey">
           <Grid
             item
@@ -73,7 +87,7 @@ const PollOption = (props: PollOptionProps) => {
         >
           <Typography>{props.poll.votes}%</Typography>
         </Grid>
-      </Grid>
+      </Grid> */}
     </Grid>
   );
 };
